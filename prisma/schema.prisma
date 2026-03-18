@@ -1,0 +1,257 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum PrintAreaCode {
+  FRONT
+  BACK
+}
+
+enum PaymentMethod {
+  COD
+}
+
+enum PaymentState {
+  PENDING_COD
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PLACED
+  CONFIRMED
+  PRODUCTION
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  FAILED_NOTIFICATION
+}
+
+enum AdminRole {
+  ADMIN
+}
+
+enum NotificationChannel {
+  EMAIL
+  SMS
+  WHATSAPP
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model ProductType {
+  id         String           @id @default(cuid())
+  slug       String           @unique
+  name       String
+  active     Boolean          @default(true)
+  variants   ProductVariant[]
+  printAreas PrintArea[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+}
+
+model ProductVariant {
+  id            String        @id @default(cuid())
+  productTypeId String
+  productType   ProductType   @relation(fields: [productTypeId], references: [id], onDelete: Cascade)
+  colorCode     String
+  colorName     String
+  sizeCode      String
+  basePriceInr  Int
+  active        Boolean       @default(true)
+  drafts        DesignDraft[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([productTypeId, colorCode, sizeCode])
+  @@index([productTypeId])
+  @@index([colorCode])
+  @@index([sizeCode])
+}
+
+model PrintArea {
+  id            String        @id @default(cuid())
+  productTypeId String
+  productType   ProductType   @relation(fields: [productTypeId], references: [id], onDelete: Cascade)
+  code          PrintAreaCode
+  addonPriceInr Int
+  textureSlot   String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([productTypeId, code])
+  @@index([productTypeId])
+}
+
+model DesignDraft {
+  id               String          @id @default(cuid())
+  sessionId        String
+  customerId       String?
+  customer         CustomerUser?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  savedToAccount   Boolean         @default(false)
+  productVariantId String
+  productVariant   ProductVariant  @relation(fields: [productVariantId], references: [id], onDelete: Cascade)
+  designJsonByArea Json            @default("{}")
+  previewImageUrls Json            @default("{}")
+  approved3d       Boolean         @default(false)
+  expiresAt        DateTime
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  uploadedAssets   UploadedAsset[]
+  orders           Order[]
+
+  @@index([sessionId])
+  @@index([customerId])
+  @@index([productVariantId])
+  @@index([expiresAt])
+}
+
+model UploadedAsset {
+  id        String      @id @default(cuid())
+  draftId   String
+  draft     DesignDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+  filePath  String
+  mimeType  String
+  width     Int
+  height    Int
+  sizeBytes Int
+  createdAt DateTime    @default(now())
+
+  @@index([draftId])
+}
+
+model Order {
+  id                    String            @id @default(cuid())
+  orderCode             String            @unique
+  idempotencyKey        String?           @unique
+  customerId            String?
+  customer              CustomerUser?     @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  draftId               String?
+  draft                 DesignDraft?      @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  designPreviewImageUrl String?
+  phone                 String
+  email                 String
+  customerName          String
+  addressJson           Json
+  subtotalInr           Int
+  shippingInr           Int
+  totalInr              Int
+  paymentMethod         PaymentMethod
+  paymentState          PaymentState
+  status                OrderStatus
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  items                 OrderItem[]
+  statusLogs            OrderStatusLog[]
+  notifications         NotificationLog[]
+
+  @@index([phone])
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                         String   @id @default(cuid())
+  orderId                    String
+  order                      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productVariantSnapshotJson Json
+  printAreaSnapshotJson      Json
+  designExportPathsJson      Json
+  quantity                   Int
+  lineTotalInr               Int
+  createdAt                  DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model OrderStatusLog {
+  id               String       @id @default(cuid())
+  orderId          String
+  order            Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus       OrderStatus?
+  toStatus         OrderStatus
+  note             String?
+  changedByAdminId String?
+  changedByAdmin   AdminUser?   @relation(fields: [changedByAdminId], references: [id], onDelete: SetNull)
+  createdAt        DateTime     @default(now())
+
+  @@index([orderId])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id            String           @id @default(cuid())
+  email         String           @unique
+  passwordHash  String
+  role          AdminRole
+  active        Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  statusChanges OrderStatusLog[]
+}
+
+model CustomerUser {
+  id                  String        @id @default(cuid())
+  loginId             String?       @unique
+  email               String?       @unique
+  phone               String?       @unique
+  fullName            String?
+  shippingAddressJson Json          @default("{}")
+  passwordHash        String
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  drafts              DesignDraft[]
+  orders              Order[]
+  passwordResetOtps   PasswordResetOtp[]
+}
+
+model PasswordResetOtp {
+  id         String       @id @default(cuid())
+  customerId String
+  customer   CustomerUser @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  email      String
+  otpHash    String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  attempts   Int          @default(0)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([customerId, expiresAt])
+  @@index([email, expiresAt])
+}
+
+model NotificationLog {
+  id                String              @id @default(cuid())
+  orderId           String
+  order             Order               @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  channel           NotificationChannel
+  providerMessageId String?
+  status            NotificationStatus
+  error             String?
+  attempts          Int                 @default(0)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([orderId])
+  @@index([channel])
+}
+
+model ShopConfig {
+  id              String   @id @default("default")
+  flatShippingInr Int      @default(99)
+  autosaveMs      Int      @default(10000)
+  updatedAt       DateTime @updatedAt
+}

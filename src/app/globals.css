@@ -1,0 +1,72 @@
+﻿@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --panel: #ffffff;
+  --muted: #000000;
+  --brand: #000000;
+  --brand-soft: #ffffff;
+  --accent: #000000;
+  --accent-soft: #ffffff;
+  --border: #000000;
+  --danger: #000000;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-panel: var(--panel);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #f0f0f0;
+  background-image: linear-gradient(135deg, #f0f0f0 0%, #f0f0f0 50%, #f0f0f0 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--foreground);
+}
+
+::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+.font-display {
+  font-family: var(--font-display), sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+canvas {
+  touch-action: none;
+}
+
+
+
+
