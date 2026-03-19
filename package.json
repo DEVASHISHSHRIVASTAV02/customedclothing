@@ -16,8 +16,10 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
+    "db:seed:admin": "tsx prisma/seed-admin.ts",
     "db:studio": "prisma studio",
     "db:local:start": "node scripts/start-local-postgres.mjs",
+    "env:check:prod": "node scripts/check-production-env.mjs .env.production.local",
     "backup:run": "node scripts/backup.mjs",
     "restore:run": "node scripts/restore.mjs"
   },
