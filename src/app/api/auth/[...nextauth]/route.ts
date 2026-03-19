@@ -5,6 +5,9 @@ import { authOptions } from "@/lib/auth";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 const handler = NextAuth(authOptions);
+type AuthRouteContext = {
+  params: Promise<{ nextauth: string[] }>;
+};
 const ADMIN_LOGIN_LIMIT = 12;
 const ADMIN_LOGIN_WINDOW_MS = 10 * 60_000;
 
@@ -30,9 +33,21 @@ function isAdminCredentialsCallback(request: NextRequest) {
   return normalizedPath.endsWith("/api/auth/callback/admin-credentials");
 }
 
-export const GET = handler;
+function invokeNextAuth(
+  request: NextRequest,
+  context: AuthRouteContext,
+) {
+  return (handler as unknown as (req: NextRequest, ctx: AuthRouteContext) => ReturnType<typeof handler>)(
+    request,
+    context,
+  );
+}
 
-export async function POST(request: NextRequest) {
+export function GET(request: NextRequest, context: AuthRouteContext) {
+  return invokeNextAuth(request, context);
+}
+
+export async function POST(request: NextRequest, context: AuthRouteContext) {
   if (isAdminCredentialsCallback(request)) {
     const ip = getClientIp(request);
     const limit = await checkRateLimit(`nextauth-admin-login:${ip}`, ADMIN_LOGIN_LIMIT, ADMIN_LOGIN_WINDOW_MS);
@@ -44,6 +59,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return handler(request);
+  return invokeNextAuth(request, context);
 }
 

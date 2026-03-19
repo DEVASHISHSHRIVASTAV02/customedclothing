@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 type AuthModalMode = "signup" | "login";
 type AuthModalView = "auth" | "forgot-request" | "forgot-confirm";
@@ -43,6 +44,63 @@ function responseErrorMessage(data: { error?: unknown }, fallback: string) {
 
   const value = data.error.trim();
   return value.length > 0 ? value : fallback;
+}
+
+function safeUiErrorMessage(error: unknown, fallback: string) {
+  if (!(error instanceof Error)) {
+    return fallback;
+  }
+
+  const message = error.message.trim();
+  if (!message) {
+    return fallback;
+  }
+
+  if (
+    message.includes("Failed to execute 'json' on 'Response'") ||
+    message.includes("Unexpected end of JSON input")
+  ) {
+    return fallback;
+  }
+
+  return message;
+}
+
+function PasswordInput({
+  className,
+  ...props
+}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="relative">
+      <Input
+        {...props}
+        type={visible ? "text" : "password"}
+        className={cn("pr-10", className)}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((value) => !value)}
+        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-[#000000]/65 transition hover:text-[#000000]"
+        aria-label={visible ? "Hide password" : "Show password"}
+      >
+        {visible ? (
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M3 3l18 18" />
+            <path d="M10.58 10.58A2 2 0 0012 14a2 2 0 001.42-.58" />
+            <path d="M9.88 5.09A10.94 10.94 0 0112 4c5 0 9.27 3.11 11 8-0.74 2.08-2.06 3.88-3.77 5.17" />
+            <path d="M6.61 6.61C4.62 8 3.12 9.89 2 12c1.73 4.89 6 8 10 8a9.77 9.77 0 004.39-1.03" />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        )}
+      </button>
+    </div>
+  );
 }
 
 function CustomerAuthModal({
@@ -173,13 +231,17 @@ function CustomerAuthModal({
         redirect: false,
       });
 
+      if (!result) {
+        throw new Error("Authentication failed.");
+      }
+
       if (result?.error) {
         throw new Error("Invalid login credentials.");
       }
 
       onAuthSuccess();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Authentication failed.");
+      setError(safeUiErrorMessage(submitError, "Authentication failed."));
     } finally {
       setLoading(false);
     }
@@ -208,7 +270,7 @@ function CustomerAuthModal({
       setNewPassword("");
       setConfirmNewPassword("");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to send OTP right now.");
+      setError(safeUiErrorMessage(submitError, "Unable to send OTP right now."));
     } finally {
       setLoading(false);
     }
@@ -241,13 +303,18 @@ function CustomerAuthModal({
         throw new Error(responseErrorMessage(responseData, "Unable to reset password right now."));
       }
 
-      const signInResult = await signIn("customer-credentials", {
-        login: resetEmail,
-        password: newPassword,
-        redirect: false,
-      });
+      let signInResult: Awaited<ReturnType<typeof signIn>> | null = null;
+      try {
+        signInResult = await signIn("customer-credentials", {
+          login: resetEmail,
+          password: newPassword,
+          redirect: false,
+        });
+      } catch {
+        signInResult = null;
+      }
 
-      if (!signInResult?.error) {
+      if (signInResult && !signInResult.error) {
         onAuthSuccess();
         return;
       }
@@ -261,7 +328,7 @@ function CustomerAuthModal({
       setConfirmNewPassword("");
       setNotice("Password reset successful. Log in with your new password.");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to reset password right now.");
+      setError(safeUiErrorMessage(submitError, "Unable to reset password right now."));
     } finally {
       setLoading(false);
     }
@@ -304,9 +371,8 @@ function CustomerAuthModal({
 
                 <div className="space-y-1">
                   <label className="text-xs text-[#000000]">Password</label>
-                  <Input
+                  <PasswordInput
                     required
-                    type="password"
                     value={password}
                     minLength={8}
                     onChange={(event) => setPassword(event.target.value)}
@@ -329,9 +395,8 @@ function CustomerAuthModal({
                 {mode === "signup" ? (
                   <div className="space-y-1">
                     <label className="text-xs text-[#000000]">Re-enter Password</label>
-                    <Input
+                    <PasswordInput
                       required
-                      type="password"
                       value={confirmPassword}
                       minLength={8}
                       onChange={(event) => setConfirmPassword(event.target.value)}
@@ -382,9 +447,8 @@ function CustomerAuthModal({
 
                 <div className="space-y-1">
                   <label className="text-xs text-[#000000]">New Password</label>
-                  <Input
+                  <PasswordInput
                     required
-                    type="password"
                     value={newPassword}
                     minLength={8}
                     onChange={(event) => setNewPassword(event.target.value)}
@@ -394,9 +458,8 @@ function CustomerAuthModal({
 
                 <div className="space-y-1">
                   <label className="text-xs text-[#000000]">Confirm New Password</label>
-                  <Input
+                  <PasswordInput
                     required
-                    type="password"
                     value={confirmNewPassword}
                     minLength={8}
                     onChange={(event) => setConfirmNewPassword(event.target.value)}

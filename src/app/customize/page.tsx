@@ -69,7 +69,7 @@ export default async function CustomizeIndexPage() {
                   <div className="aspect-[16/11] overflow-hidden rounded-xl border border-[#ffffff]/20 bg-[#000000]">
                     <ClothingImage
                       type={product.slug}
-                      fit="cover"
+                      fit="contain"
                       className="h-full w-full rounded-none border-0 bg-[#ffffff]"
                     />
                   </div>
