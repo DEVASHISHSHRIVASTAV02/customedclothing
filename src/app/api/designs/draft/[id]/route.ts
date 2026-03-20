@@ -373,3 +373,53 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     warnings: [],
   });
 }
+
+export async function DELETE(_request: NextRequest, context: RouteContext) {
+  void _request;
+  const customerSession = await getCustomerSession();
+  if (!customerSession) {
+    return fail("Please log in to delete drafts.", 401);
+  }
+
+  const { id } = await context.params;
+  const existing = await prisma.designDraft.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      customerId: true,
+      createdAt: true,
+      _count: {
+        select: {
+          orders: true,
+        },
+      },
+    },
+  });
+
+  if (!existing) {
+    return fail("Draft not found.", 404);
+  }
+
+  if (!existing.customerId || existing.customerId !== customerSession.user.id) {
+    return fail("You do not have access to this draft.", 403);
+  }
+
+  if (existing._count.orders > 0) {
+    return fail("This draft is linked to an order and cannot be deleted.", 409);
+  }
+
+  const savedDraftStorageSubdirectory = buildSavedDraftStorageSubdirectory(existing.createdAt, existing.id);
+  await Promise.all([
+    deleteStoredDirectory("saved-drafts", savedDraftStorageSubdirectory),
+    deleteStoredDirectory("saved-drafts", existing.id),
+  ]);
+
+  await prisma.designDraft.delete({
+    where: { id: existing.id },
+  });
+
+  return ok({
+    draftId: existing.id,
+    deleted: true,
+  });
+}

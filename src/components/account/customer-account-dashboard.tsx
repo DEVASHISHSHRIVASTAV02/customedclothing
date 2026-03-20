@@ -18,6 +18,7 @@ import { Select } from "@/components/ui/select";
 
 const ACCOUNT_VISIBLE_AREAS: AreaKey[] = ["front", "back"];
 const EMPTY_PREVIEW_DATA_URL = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+const ORDER_CANCEL_WINDOW_MS = 12 * 60 * 60 * 1000;
 
 type SavedDraft = {
   id: string;
@@ -167,6 +168,15 @@ function hasMeaningfulPreviewSource(source?: string) {
   return trimmed !== EMPTY_PREVIEW_DATA_URL;
 }
 
+function isOrderWithinCancelWindow(createdAt: string) {
+  const createdAtDate = new Date(createdAt);
+  if (Number.isNaN(createdAtDate.getTime())) {
+    return false;
+  }
+
+  return Date.now() - createdAtDate.getTime() <= ORDER_CANCEL_WINDOW_MS;
+}
+
 export function CustomerAccountDashboard() {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -177,6 +187,9 @@ export function CustomerAccountDashboard() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState<ProfileFormState | null>(null);
   const [buyingAgainOrderId, setBuyingAgainOrderId] = useState<string | null>(null);
+  const [deletingDraftId, setDeletingDraftId] = useState<string | null>(null);
+  const [confirmingCancelOrderId, setConfirmingCancelOrderId] = useState<string | null>(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const isCustomer = status === "authenticated" && session?.user.role === "CUSTOMER";
@@ -236,6 +249,42 @@ export function CustomerAccountDashboard() {
     router.push(`/customize/${draft.productSlug}?draftId=${draft.id}&areas=${areas}&step=5`);
   };
 
+  const onDeleteDraft = async (draftId: string) => {
+    if (typeof window !== "undefined") {
+      const shouldDelete = window.confirm("Delete this draft? This will permanently remove saved files and records.");
+      if (!shouldDelete) {
+        return;
+      }
+    }
+
+    setDeletingDraftId(draftId);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/designs/draft/${draftId}`, {
+        method: "DELETE",
+      });
+      const data = await readResponseJson<{ deleted: boolean }>(response);
+      if (!response.ok || data.deleted !== true) {
+        throw new Error(responseErrorMessage(data, "Unable to delete draft."));
+      }
+
+      setAccountData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        return {
+          ...previous,
+          savedDrafts: previous.savedDrafts.filter((draft) => draft.id !== draftId),
+        };
+      });
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : "Unable to delete draft.");
+    } finally {
+      setDeletingDraftId((previous) => (previous === draftId ? null : previous));
+    }
+  };
+
   const onBuyAgain = async (orderId: string) => {
     setBuyingAgainOrderId(orderId);
     setError(null);
@@ -254,6 +303,45 @@ export function CustomerAccountDashboard() {
       setError(buyAgainError instanceof Error ? buyAgainError.message : "Unable to prepare buy again draft.");
     } finally {
       setBuyingAgainOrderId(null);
+    }
+  };
+
+  const onConfirmCancelOrder = (orderId: string) => {
+    setConfirmingCancelOrderId(orderId);
+    setError(null);
+  };
+
+  const onDismissCancelOrder = () => {
+    setConfirmingCancelOrderId(null);
+  };
+
+  const onCancelOrder = async (order: OrderHistoryItem) => {
+    setCancellingOrderId(order.id);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/customer/orders/${order.id}/cancel`, {
+        method: "POST",
+      });
+      const data = await readResponseJson<{ cancelled: boolean }>(response);
+      if (!response.ok || data.cancelled !== true) {
+        throw new Error(responseErrorMessage(data, "Unable to cancel order."));
+      }
+
+      setAccountData((previous) => {
+        if (!previous) {
+          return previous;
+        }
+        return {
+          ...previous,
+          orders: previous.orders.filter((item) => item.id !== order.id),
+        };
+      });
+      setConfirmingCancelOrderId((previous) => (previous === order.id ? null : previous));
+    } catch (cancelError) {
+      setError(cancelError instanceof Error ? cancelError.message : "Unable to cancel order.");
+    } finally {
+      setCancellingOrderId((previous) => (previous === order.id ? null : previous));
     }
   };
 
@@ -511,68 +599,77 @@ export function CustomerAccountDashboard() {
         </CardHeader>
         <CardBody className="space-y-4">
           {accountData?.savedDrafts.length ? (
-            accountData.savedDrafts.map((draft) => (
-              <div key={draft.id} className="rounded-xl border border-[#000000]/20 bg-[#ffffff]/70 p-4 space-y-3">
-                <p className="text-sm font-semibold">{draft.productName}</p>
-                <p className="text-xs text-[#000000]">
-                  Color: {draft.colorName} | Size: {draft.sizeCode} | Saved: {formatDateTimeIst(draft.updatedAt)}
-                </p>
-                <p className="text-xs text-[#000000]">
-                  Areas: {draft.selectedAreas.filter((area) => ACCOUNT_VISIBLE_AREAS.includes(area)).map((area) => AREA_LABELS[area]).join(", ")}
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {ACCOUNT_VISIBLE_AREAS.map((area) => {
-                    const basePreviewSrc = getDraftBasePreviewSrc(draft.productSlug, area);
-                    const overlayPreviewSrc = draft.previewImageUrls[area];
-                    const composedPreviewSrc = isComposedPreviewSource(overlayPreviewSrc)
-                      ? overlayPreviewSrc
-                      : null;
-                    const hasOverlayPreviewSrc = hasMeaningfulPreviewSource(overlayPreviewSrc);
-                    const finalPreviewSrc = composedPreviewSrc ?? (hasOverlayPreviewSrc ? overlayPreviewSrc as string : null);
-                    const previewInsetClass = "absolute inset-[2.5%]";
-                    const previewImageClass = "object-contain";
+            accountData.savedDrafts.map((draft) => {
+              const isDeletingDraft = deletingDraftId === draft.id;
 
-                    return (
-                      <div key={`${draft.id}-${area}`} className="overflow-hidden rounded-lg border border-[#ffffff]/80 bg-[#ffffff]/80">
-                        {finalPreviewSrc ? (
-                          <div className="relative aspect-square w-full bg-[#ffffff]">
-                            <div className={previewInsetClass}>
-                              <Image
-                                src={finalPreviewSrc}
-                                alt={`${draft.id}-${area}`}
-                                fill
-                                unoptimized
-                                className={previewImageClass}
-                              />
+              return (
+                <div key={draft.id} className="rounded-xl border border-[#000000]/20 bg-[#ffffff]/70 p-4 space-y-3">
+                  <p className="text-sm font-semibold">{draft.productName}</p>
+                  <p className="text-xs text-[#000000]">
+                    Color: {draft.colorName} | Size: {draft.sizeCode} | Saved: {formatDateTimeIst(draft.updatedAt)}
+                  </p>
+                  <p className="text-xs text-[#000000]">
+                    Areas: {draft.selectedAreas.filter((area) => ACCOUNT_VISIBLE_AREAS.includes(area)).map((area) => AREA_LABELS[area]).join(", ")}
+                  </p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {ACCOUNT_VISIBLE_AREAS.map((area) => {
+                      const basePreviewSrc = getDraftBasePreviewSrc(draft.productSlug, area);
+                      const overlayPreviewSrc = draft.previewImageUrls[area];
+                      const composedPreviewSrc = isComposedPreviewSource(overlayPreviewSrc)
+                        ? overlayPreviewSrc
+                        : null;
+                      const hasOverlayPreviewSrc = hasMeaningfulPreviewSource(overlayPreviewSrc);
+                      const finalPreviewSrc = composedPreviewSrc ?? (hasOverlayPreviewSrc ? overlayPreviewSrc as string : null);
+                      const previewInsetClass = "absolute inset-[2.5%]";
+                      const previewImageClass = "object-contain";
+
+                      return (
+                        <div key={`${draft.id}-${area}`} className="overflow-hidden rounded-lg border border-[#ffffff]/80 bg-[#ffffff]/80">
+                          {finalPreviewSrc ? (
+                            <div className="relative aspect-square w-full bg-[#ffffff]">
+                              <div className={previewInsetClass}>
+                                <Image
+                                  src={finalPreviewSrc}
+                                  alt={`${draft.id}-${area}`}
+                                  fill
+                                  unoptimized
+                                  className={previewImageClass}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        ) : basePreviewSrc ? (
-                          <div className="relative aspect-square w-full bg-[#ffffff]">
-                            <div className={previewInsetClass}>
-                              <Image
-                                src={basePreviewSrc}
-                                alt={`${draft.productName}-${area}-base`}
-                                fill
-                                className={previewImageClass}
-                              />
+                          ) : basePreviewSrc ? (
+                            <div className="relative aspect-square w-full bg-[#ffffff]">
+                              <div className={previewInsetClass}>
+                                <Image
+                                  src={basePreviewSrc}
+                                  alt={`${draft.productName}-${area}-base`}
+                                  fill
+                                  className={previewImageClass}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="flex aspect-square w-full items-center justify-center text-xs text-[#000000]">No preview</div>
-                        )}
-                        <p className="px-2 py-1 text-[11px] text-[#000000]">{AREA_LABELS[area]}</p>
-                      </div>
-                    );
-                  })}
+                          ) : (
+                            <div className="flex aspect-square w-full items-center justify-center text-xs text-[#000000]">No preview</div>
+                          )}
+                          <p className="px-2 py-1 text-[11px] text-[#000000]">{AREA_LABELS[area]}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button onClick={() => onBuyDraft(draft)} disabled={isDeletingDraft}>
+                      Preview and Buy
+                    </Button>
+                    <Button variant="ghost" onClick={() => onEditDraft(draft)} disabled={isDeletingDraft}>
+                      Edit
+                    </Button>
+                    <Button variant="danger" onClick={() => void onDeleteDraft(draft.id)} disabled={isDeletingDraft}>
+                      {isDeletingDraft ? "Deleting..." : "Delete Draft"}
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  <Button onClick={() => onBuyDraft(draft)}>Preview and Buy</Button>
-                  <Button variant="ghost" onClick={() => onEditDraft(draft)}>
-                    Edit
-                  </Button>
-                </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <p className="text-sm text-[#000000]">No saved drafts yet.</p>
           )}
@@ -585,75 +682,105 @@ export function CustomerAccountDashboard() {
         </CardHeader>
         <CardBody className="space-y-4">
           {accountData?.orders.length ? (
-            accountData.orders.map((order) => (
-              <div key={order.id} className="rounded-xl border border-[#000000]/20 bg-[#ffffff]/70 p-4 space-y-3">
-                <div className="space-y-1 text-sm text-[#000000]">
-                  <p className="font-semibold">{order.orderCode}</p>
-                  <p>
-                    {order.productName} | Color: {order.colorName} | Size: {order.sizeCode} | Quantity: {order.quantity}
-                  </p>
-                  <p>
-                    Ordered: {formatDateTimeIst(order.createdAt)}
-                    {order.shippedAt ? ` | Shipped: ${formatDateTimeIst(order.shippedAt)}` : " | Shipped: Pending"}
-                  </p>
-                  <p>
-                    Status: {order.status} | Payment: {order.paymentState} | Total: {formatInr(order.totalInr)}
-                  </p>
-                </div>
+            accountData.orders.map((order) => {
+              const isOrderWithinWindow = isOrderWithinCancelWindow(order.createdAt);
+              const canCancelOrder = order.status !== "CANCELLED" && isOrderWithinWindow;
+              const isConfirmingCancel = confirmingCancelOrderId === order.id;
+              const isCancelling = cancellingOrderId === order.id;
 
-                <div className="rounded-lg border border-[#ffffff]/80 bg-[#ffffff]/80 p-3 text-xs text-[#000000]">
-                  <p className="font-medium text-[#000000]">Shipping & Contact</p>
-                  <p>{order.shippingContact.customerName}</p>
-                  <p>{order.shippingContact.email}</p>
-                  <p>{order.shippingContact.phone}</p>
-                  <p>
-                    {order.shippingAddress.line1}
-                    {order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}
-                    {order.shippingAddress.landmark ? `, ${order.shippingAddress.landmark}` : ""}
-                  </p>
-                  <p>
-                    {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode},{" "}
-                    {order.shippingAddress.country}
-                  </p>
-                </div>
+              return (
+                <div key={order.id} className="rounded-xl border border-[#000000]/20 bg-[#ffffff]/70 p-4 space-y-3">
+                  <div className="space-y-1 text-sm text-[#000000]">
+                    <p className="font-semibold">{order.orderCode}</p>
+                    <p>
+                      {order.productName} | Color: {order.colorName} | Size: {order.sizeCode} | Quantity: {order.quantity}
+                    </p>
+                    <p>
+                      Ordered: {formatDateTimeIst(order.createdAt)}
+                      {order.shippedAt ? ` | Shipped: ${formatDateTimeIst(order.shippedAt)}` : " | Shipped: Pending"}
+                    </p>
+                    <p>
+                      Status: {order.status} | Payment: {order.paymentState} | Total: {formatInr(order.totalInr)}
+                    </p>
+                  </div>
 
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {ACCOUNT_VISIBLE_AREAS.map((area) => {
-                    const orderImageSrc = order.imageUrls[area];
-                    const hasOrderImage = hasMeaningfulPreviewSource(orderImageSrc ?? undefined);
-                    const basePreviewSrc = getDraftBasePreviewSrc(order.productSlug, area);
-                    const finalPreviewSrc = hasOrderImage ? orderImageSrc : basePreviewSrc;
-                    const previewInsetClass = "absolute inset-[2.5%]";
-                    const previewImageClass = "object-contain";
+                  <div className="rounded-lg border border-[#ffffff]/80 bg-[#ffffff]/80 p-3 text-xs text-[#000000]">
+                    <p className="font-medium text-[#000000]">Shipping & Contact</p>
+                    <p>{order.shippingContact.customerName}</p>
+                    <p>{order.shippingContact.email}</p>
+                    <p>{order.shippingContact.phone}</p>
+                    <p>
+                      {order.shippingAddress.line1}
+                      {order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ""}
+                      {order.shippingAddress.landmark ? `, ${order.shippingAddress.landmark}` : ""}
+                    </p>
+                    <p>
+                      {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postalCode},{" "}
+                      {order.shippingAddress.country}
+                    </p>
+                  </div>
 
-                    return (
-                      <div key={`${order.id}-${area}`} className="overflow-hidden rounded-lg border border-[#ffffff]/80 bg-[#ffffff]/80">
-                        {finalPreviewSrc ? (
-                          <div className="relative aspect-square w-full bg-[#ffffff]">
-                            <div className={previewInsetClass}>
-                              <Image
-                                src={finalPreviewSrc}
-                                alt={`${order.orderCode}-${area}`}
-                                fill
-                                unoptimized
-                                className={previewImageClass}
-                              />
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {ACCOUNT_VISIBLE_AREAS.map((area) => {
+                      const orderImageSrc = order.imageUrls[area];
+                      const hasOrderImage = hasMeaningfulPreviewSource(orderImageSrc ?? undefined);
+                      const basePreviewSrc = getDraftBasePreviewSrc(order.productSlug, area);
+                      const finalPreviewSrc = hasOrderImage ? orderImageSrc : basePreviewSrc;
+                      const previewInsetClass = "absolute inset-[2.5%]";
+                      const previewImageClass = "object-contain";
+
+                      return (
+                        <div key={`${order.id}-${area}`} className="overflow-hidden rounded-lg border border-[#ffffff]/80 bg-[#ffffff]/80">
+                          {finalPreviewSrc ? (
+                            <div className="relative aspect-square w-full bg-[#ffffff]">
+                              <div className={previewInsetClass}>
+                                <Image
+                                  src={finalPreviewSrc}
+                                  alt={`${order.orderCode}-${area}`}
+                                  fill
+                                  unoptimized
+                                  className={previewImageClass}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="flex aspect-square w-full items-center justify-center text-xs text-[#000000]">No image</div>
-                        )}
-                        <p className="px-2 py-1 text-[11px] text-[#000000]">{AREA_LABELS[area]}</p>
-                      </div>
-                    );
-                  })}
-                </div>
+                          ) : (
+                            <div className="flex aspect-square w-full items-center justify-center text-xs text-[#000000]">No image</div>
+                          )}
+                          <p className="px-2 py-1 text-[11px] text-[#000000]">{AREA_LABELS[area]}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
 
-                <Button onClick={() => void onBuyAgain(order.id)} disabled={buyingAgainOrderId === order.id}>
-                  {buyingAgainOrderId === order.id ? "Preparing..." : "Buy Again"}
-                </Button>
-              </div>
-            ))
+                  <div className="flex flex-wrap gap-2">
+                    <Button onClick={() => void onBuyAgain(order.id)} disabled={buyingAgainOrderId === order.id || isCancelling}>
+                      {buyingAgainOrderId === order.id ? "Preparing..." : "Buy Again"}
+                    </Button>
+                    {canCancelOrder && !isConfirmingCancel ? (
+                      <Button variant="danger" onClick={() => onConfirmCancelOrder(order.id)} disabled={isCancelling}>
+                        Cancel Order
+                      </Button>
+                    ) : null}
+                  </div>
+
+                  {isConfirmingCancel ? (
+                    <div className="space-y-2 rounded-lg border border-[#000000]/20 bg-[#ffffff]/80 p-3 text-sm text-[#000000]">
+                      <p>
+                        Are you sure you want to cancel order with order id (&quot;{order.orderCode}&quot;)?
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <Button variant="danger" onClick={() => void onCancelOrder(order)} disabled={isCancelling}>
+                          {isCancelling ? "Cancelling..." : "Yes, Cancel"}
+                        </Button>
+                        <Button variant="ghost" onClick={onDismissCancelOrder} disabled={isCancelling}>
+                          No
+                        </Button>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })
           ) : (
             <p className="text-sm text-[#000000]">No purchases yet.</p>
           )}
