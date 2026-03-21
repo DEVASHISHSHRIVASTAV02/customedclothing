@@ -1,8 +1,8 @@
 ﻿import { SiteFooter } from "@/components/site-footer";
 
 export const metadata = {
-  title: "Our Story | CUSTOMED",
-  description: "Learn the story behind CUSTOMED and its founder, Devashish Shrivastav.",
+  title: "Our Story | Customed Clothing",
+  description: "Learn the story behind Customed Clothing and its founder, Devashish Shrivastav.",
 };
 
 export default function OurStoryPage() {
@@ -10,17 +10,17 @@ export default function OurStoryPage() {
     <>
       <div className="mx-auto w-full max-w-7xl px-6 py-12">
         <div className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#000000]">About Us</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-[#000000] md:text-5xl">
+          <p className="text-sm uppercase tracking-[0.2em] text-[#000000]">About Us</p>
+          <h1 className="mt-2 text-5xl font-semibold tracking-tight text-[#000000] md:text-6xl">
             Our Story
           </h1>
-          <p className="mt-4 text-base leading-relaxed text-[#000000] md:text-lg">
-            Hi, this is Devashish Shrivastav. I am the sole founder and developer of CUSTOMED.
+          <p className="mt-4 text-lg leading-relaxed text-[#000000] md:text-xl">
+            Hi, this is Devashish Shrivastav. I am the sole founder and developer of Customed Clothing.
           </p>
         </div>
 
         <section className="mt-10 grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-start">
-          <article className="space-y-5 rounded-2xl border border-[#ffffff]/80 bg-[#ffffff] p-6 text-[#000000] shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-md">
+          <article className="space-y-5 text-base text-[#000000] md:text-lg">
             <p className="leading-relaxed">
               I came up with the idea in early 2025. I noticed that many websites and apps let users customize
               clothing items, and some even offered customization for phone covers, coffee mugs, and backpacks.
@@ -56,12 +56,12 @@ export default function OurStoryPage() {
             </p>
           </article>
 
-          <aside className="rounded-2xl border border-dashed border-[#000000] bg-[#ffffff] p-5 shadow-[0_10px_24px_rgba(0,0,0,0.08)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#000000]">Founders </p>
-            <div className="mt-4 flex aspect-[4/5] w-full items-center justify-center rounded-xl border-2 border-dashed border-[#000000] bg-[#ffffff]/70 px-4 text-center">
+          <aside className="rounded-2xl border border-dashed border-[#000000] p-5">
+            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#000000]">Founders </p>
+            <div className="mt-4 flex aspect-[4/5] w-full items-center justify-center rounded-xl border-2 border-dashed border-[#000000] px-4 text-center">
               <div>
-                <p className="text-base font-medium text-[#000000]">Image Placeholder</p>
-                <p className="mt-2 text-sm text-[#000000]">
+                <p className="text-lg font-medium text-[#000000]">Image Placeholder</p>
+                <p className="mt-2 text-base text-[#000000]">
                   You can replace this area with a large founder photo later.
                 </p>
               </div>

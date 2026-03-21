@@ -2,8 +2,8 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata = {
-  title: "Return and Refunds Policy | CUSTOMED",
-  description: "Review eligibility, timelines, and process for returns, replacements, and refunds at CUSTOMED.",
+  title: "Return and Refunds Policy | Customed Clothing",
+  description: "Review eligibility, timelines, and process for returns, replacements, and refunds at Customed Clothing.",
 };
 
 function PolicySection({
@@ -14,9 +14,9 @@ function PolicySection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-3 rounded-2xl border border-[#ffffff]/80 bg-[#ffffff] p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-md">
-      <h2 className="text-xl font-semibold tracking-tight text-[#000000]">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-[#000000] md:text-base">{children}</div>
+    <section className="space-y-3 border-b border-[#000000]/15 pb-6 last:border-b-0">
+      <h2 className="text-xl font-semibold tracking-tight text-[#000000] md:text-2xl">{title}</h2>
+      <div className="space-y-3 text-base leading-relaxed text-[#000000] md:text-lg">{children}</div>
     </section>
   );
 }
@@ -24,29 +24,29 @@ function PolicySection({
 export default function ReturnAndRefundsPage() {
   return (
     <>
-      <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <header className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#000000]">Legal</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-[#000000] md:text-5xl">
+      <div className="mx-auto w-full max-w-4xl px-6 py-12">
+        <header className="max-w-3xl border-b border-[#000000]/20 pb-8">
+          <p className="text-sm uppercase tracking-[0.2em] text-[#000000]">Legal</p>
+          <h1 className="mt-2 text-5xl font-semibold tracking-tight text-[#000000] md:text-6xl">
             Return and Refunds Policy
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-[#000000] md:text-base">Last updated: March 17, 2026</p>
-          <p className="mt-3 text-sm leading-relaxed text-[#000000] md:text-base">
-            Because CUSTOMED products are made-to-order, return and refund eligibility is limited. Please read this
+          <p className="mt-3 text-base leading-relaxed text-[#000000] md:text-lg">Last updated: March 17, 2026</p>
+          <p className="mt-3 text-base leading-relaxed text-[#000000] md:text-lg">
+            Because Customed Clothing products are made-to-order, return and refund eligibility is limited. Please read this
             policy carefully before placing an order.
           </p>
         </header>
 
-        <main className="mt-8 space-y-5">
-          <PolicySection title="1. Nature of Custom Products">
+        <main className="mt-8 space-y-7">
+          <PolicySection title="Nature of Custom Products">
             <p>
-              Most CUSTOMED items are personalized and produced specifically for your order. Therefore, returns or
+              Most Customed Clothing items are personalized and produced specifically for your order. Therefore, returns or
               exchanges are generally not accepted for reasons such as change of mind, wrong size selected by customer,
               or preference changes after production starts.
             </p>
           </PolicySection>
 
-          <PolicySection title="2. Eligible Cases for Return or Replacement">
+          <PolicySection title="Eligible Cases for Return or Replacement">
             <p>You may request support if any of the following applies:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>You received the wrong product or wrong design.</li>
@@ -56,7 +56,7 @@ export default function ReturnAndRefundsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="3. Raise a Request Timeline">
+          <PolicySection title="Raise a Request Timeline">
             <p>
               Raise your return/replacement/refund request within 48 hours of delivery through our{" "}
               <Link href="/contact" className="font-medium text-[#000000] underline underline-offset-4">
@@ -70,7 +70,7 @@ export default function ReturnAndRefundsPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="4. Verification and Resolution">
+          <PolicySection title="Verification and Resolution">
             <p>
               Our team reviews all requests and may offer one of the following resolutions based on case validity:
             </p>
@@ -81,7 +81,7 @@ export default function ReturnAndRefundsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="5. Non-Eligible Cases">
+          <PolicySection title="Non-Eligible Cases">
             <ul className="list-disc space-y-2 pl-5">
               <li>Minor color variation due to screen/display differences.</li>
               <li>Issues arising from incorrect size or customization data entered by customer.</li>
@@ -90,14 +90,14 @@ export default function ReturnAndRefundsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="6. Refund Timelines">
+          <PolicySection title="Refund Timelines">
             <p>
               Once approved, refunds for prepaid orders are generally processed within 5 to 10 business days. Actual
               credit timelines depend on your bank, card network, or payment provider.
             </p>
           </PolicySection>
 
-          <PolicySection title="7. Cancellation and Payment Linkage">
+          <PolicySection title="Cancellation and Payment Linkage">
             <p>
               For cancellations before production starts, please refer to our{" "}
               <Link href="/cancellation-policy" className="font-medium text-[#000000] underline underline-offset-4">
@@ -111,7 +111,7 @@ export default function ReturnAndRefundsPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="8. Contact for Returns and Refunds">
+          <PolicySection title="Contact for Returns and Refunds">
             <p>
               For assistance, use the{" "}
               <Link href="/contact" className="font-medium text-[#000000] underline underline-offset-4">
@@ -127,3 +127,6 @@ export default function ReturnAndRefundsPage() {
     </>
   );
 }
+
+
+

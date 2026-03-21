@@ -1,9 +1,9 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata = {
-  title: "Privacy Policy | CUSTOMED",
-  description: "Read how CUSTOMED collects, uses, stores, and protects your personal information.",
+  title: "Privacy Policy | Customed Clothing",
+  description: "Read how Customed Clothing collects, uses, stores, and protects your personal information.",
 };
 
 function PolicySection({
@@ -14,9 +14,9 @@ function PolicySection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-3 rounded-2xl border border-[#ffffff]/80 bg-[#ffffff] p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-md">
-      <h2 className="text-xl font-semibold tracking-tight text-[#000000]">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-[#000000] md:text-base">{children}</div>
+    <section className="space-y-3 border-b border-[#000000]/15 pb-6 last:border-b-0">
+      <h2 className="text-xl font-semibold tracking-tight text-[#000000] md:text-2xl">{title}</h2>
+      <div className="space-y-3 text-base leading-relaxed text-[#000000] md:text-lg">{children}</div>
     </section>
   );
 }
@@ -24,30 +24,30 @@ function PolicySection({
 export default function PrivacyPolicyPage() {
   return (
     <>
-      <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <header className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#000000]">Legal</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-[#000000] md:text-5xl">
+      <div className="mx-auto w-full max-w-4xl px-6 py-12">
+        <header className="max-w-3xl border-b border-[#000000]/20 pb-8">
+          <p className="text-sm uppercase tracking-[0.2em] text-[#000000]">Legal</p>
+          <h1 className="mt-2 text-5xl font-semibold tracking-tight text-[#000000] md:text-6xl">
             Privacy Policy
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-[#000000] md:text-base">
+          <p className="mt-3 text-base leading-relaxed text-[#000000] md:text-lg">
             Last updated: February 26, 2026
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-[#000000] md:text-base">
-            This Privacy Policy explains how CUSTOMED collects, uses, stores, and protects your information when you
+          <p className="mt-3 text-base leading-relaxed text-[#000000] md:text-lg">
+            This Privacy Policy explains how Customed Clothing collects, uses, stores, and protects your information when you
             use our website and services.
           </p>
         </header>
 
-        <main className="mt-8 space-y-5">
-          <PolicySection title="1. Scope and Consent">
+        <main className="mt-8 space-y-7">
+          <PolicySection title="Scope and Consent">
             <p>
-              By accessing or using CUSTOMED, you agree to this Privacy Policy and our handling of information as
+              By accessing or using Customed Clothing, you agree to this Privacy Policy and our handling of information as
               described below. If you do not agree, please discontinue using the website.
             </p>
           </PolicySection>
 
-          <PolicySection title="2. Information We Collect">
+          <PolicySection title="Information We Collect">
             <p>We may collect the following categories of information:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>
@@ -73,10 +73,10 @@ export default function PrivacyPolicyPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="3. How We Use Your Information">
+          <PolicySection title="How We Use Your Information">
             <p>We use your information to:</p>
             <ul className="list-disc space-y-2 pl-5">
-              <li>Operate and improve the CUSTOMED platform and customization workflow.</li>
+              <li>Operate and improve the Customed Clothing platform and customization workflow.</li>
               <li>Create, verify, and fulfill customer orders.</li>
               <li>Provide order updates, support communication, and service notifications.</li>
               <li>Detect, prevent, and investigate fraud, abuse, or unauthorized activity.</li>
@@ -84,25 +84,25 @@ export default function PrivacyPolicyPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="4. Sharing and Disclosure">
+          <PolicySection title="Sharing and Disclosure">
             <p>We do not sell your personal information. We may share limited information only when required for:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>Service providers that help us run operations such as hosting, storage, email, and messaging.</li>
               <li>Logistics or operational partners involved in order processing and delivery.</li>
               <li>Compliance with legal obligations, court orders, or lawful government requests.</li>
-              <li>Protection of CUSTOMED, users, or the public from fraud or security risks.</li>
+              <li>Protection of Customed Clothing, users, or the public from fraud or security risks.</li>
             </ul>
           </PolicySection>
 
-          <PolicySection title="5. Payments and Transaction Data">
+          <PolicySection title="Payments and Transaction Data">
             <p>
-              At launch, CUSTOMED supports Cash on Delivery (COD). If online payment methods are enabled in the future,
+              At launch, Customed Clothing supports Cash on Delivery (COD). If online payment methods are enabled in the future,
               payment processing will be handled by trusted third-party gateways. We do not intentionally store complete
               card details on our application servers.
             </p>
           </PolicySection>
 
-          <PolicySection title="6. Cookies, Sessions, and Analytics">
+          <PolicySection title="Cookies, Sessions, and Analytics">
             <p>
               We use cookies and session technologies to keep users signed in, secure user sessions, prevent misuse,
               and support core website features. Some technical data may also be used for performance monitoring and
@@ -110,7 +110,7 @@ export default function PrivacyPolicyPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="7. Data Retention and Security">
+          <PolicySection title="Data Retention and Security">
             <p>
               We retain personal data for as long as needed to provide services, complete orders, resolve disputes,
               maintain business records, and meet legal requirements. We implement reasonable technical and
@@ -118,7 +118,7 @@ export default function PrivacyPolicyPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="8. Your Rights and Choices">
+          <PolicySection title="Your Rights and Choices">
             <p>
               You may request access, correction, or deletion of your personal information, subject to legal and
               operational requirements. You may also request closure of your account where applicable.
@@ -132,15 +132,15 @@ export default function PrivacyPolicyPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="9. Children&apos;s Privacy">
+          <PolicySection title="Children&apos;s Privacy">
             <p>
-              CUSTOMED is not intended for children under 13 years of age. We do not knowingly collect personal
+              Customed Clothing is not intended for children under 13 years of age. We do not knowingly collect personal
               information from children under 13. If such information is discovered, we will take reasonable steps to
               remove it.
             </p>
           </PolicySection>
 
-          <PolicySection title="10. Third-Party Links and Services">
+          <PolicySection title="Third-Party Links and Services">
             <p>
               Our website may include links or embedded services from third parties (for example, map providers). Their
               privacy practices are governed by their own policies, and we encourage users to review those policies
@@ -148,16 +148,16 @@ export default function PrivacyPolicyPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="11. Policy Updates">
+          <PolicySection title="Policy Updates">
             <p>
               We may update this Privacy Policy from time to time to reflect legal, operational, or product changes.
               The revised version will be posted on this page with the latest effective date.
             </p>
           </PolicySection>
 
-          <PolicySection title="12. Intellectual Property Claims (IPC)">
+          <PolicySection title="Intellectual Property Claims (IPC)">
             <p>
-              CUSTOMED respects the intellectual property rights of others. We may remove, restrict, or disable access
+              Customed Clothing respects the intellectual property rights of others. We may remove, restrict, or disable access
               to user-submitted content that appears to violate copyright, trademark, or other applicable intellectual
               property laws.
             </p>
@@ -185,7 +185,7 @@ export default function PrivacyPolicyPage() {
             </p>
           </PolicySection>
 
-          <PolicySection title="13. Contact Information">
+          <PolicySection title="Contact Information">
             <p>
               If you have questions about this Privacy Policy or our data handling practices, please contact us through
               the Contact Us page.
@@ -201,6 +201,8 @@ export default function PrivacyPolicyPage() {
     </>
   );
 }
+
+
 
 
 

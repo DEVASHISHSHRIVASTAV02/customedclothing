@@ -2,8 +2,8 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 
 export const metadata = {
-  title: "Terms and Conditions | CUSTOMED",
-  description: "Review the terms and conditions for using CUSTOMED and placing orders.",
+  title: "Terms and Conditions | Customed Clothing",
+  description: "Review the terms and conditions for using Customed Clothing and placing orders.",
 };
 
 function PolicySection({
@@ -14,9 +14,9 @@ function PolicySection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="space-y-3 rounded-2xl border border-[#ffffff]/80 bg-[#ffffff] p-6 shadow-[0_12px_28px_rgba(0,0,0,0.08)] backdrop-blur-md">
-      <h2 className="text-xl font-semibold tracking-tight text-[#000000]">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-[#000000] md:text-base">{children}</div>
+    <section className="space-y-3 border-b border-[#000000]/15 pb-6 last:border-b-0">
+      <h2 className="text-xl font-semibold tracking-tight text-[#000000] md:text-2xl">{title}</h2>
+      <div className="space-y-3 text-base leading-relaxed text-[#000000] md:text-lg">{children}</div>
     </section>
   );
 }
@@ -24,27 +24,27 @@ function PolicySection({
 export default function TermsAndConditionsPage() {
   return (
     <>
-      <div className="mx-auto w-full max-w-5xl px-6 py-10">
-        <header className="max-w-3xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#000000]">Legal</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-[#000000] md:text-5xl">
+      <div className="mx-auto w-full max-w-4xl px-6 py-12">
+        <header className="max-w-3xl border-b border-[#000000]/20 pb-8">
+          <p className="text-sm uppercase tracking-[0.2em] text-[#000000]">Legal</p>
+          <h1 className="mt-2 text-5xl font-semibold tracking-tight text-[#000000] md:text-6xl">
             Terms and Conditions
           </h1>
-          <p className="mt-3 text-sm leading-relaxed text-[#000000] md:text-base">Last updated: March 17, 2026</p>
-          <p className="mt-3 text-sm leading-relaxed text-[#000000] md:text-base">
-            These Terms and Conditions govern your use of CUSTOMED and all purchases made through our platform.
+          <p className="mt-3 text-base leading-relaxed text-[#000000] md:text-lg">Last updated: March 17, 2026</p>
+          <p className="mt-3 text-base leading-relaxed text-[#000000] md:text-lg">
+            These Terms and Conditions govern your use of Customed Clothing and all purchases made through our platform.
           </p>
         </header>
 
-        <main className="mt-8 space-y-5">
-          <PolicySection title="1. Acceptance of Terms">
+        <main className="mt-8 space-y-7">
+          <PolicySection title="Acceptance of Terms">
             <p>
-              By accessing or using CUSTOMED, you agree to be bound by these Terms and Conditions, our Privacy Policy,
+              By accessing or using Customed Clothing, you agree to be bound by these Terms and Conditions, our Privacy Policy,
               and all related policies published on this website.
             </p>
           </PolicySection>
 
-          <PolicySection title="2. Eligibility and Account Responsibility">
+          <PolicySection title="Eligibility and Account Responsibility">
             <ul className="list-disc space-y-2 pl-5">
               <li>You must provide accurate and complete information while creating an account or placing orders.</li>
               <li>You are responsible for keeping your account credentials secure and for all activity under your account.</li>
@@ -52,7 +52,7 @@ export default function TermsAndConditionsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="3. Custom Content and Intellectual Property">
+          <PolicySection title="Custom Content and Intellectual Property">
             <ul className="list-disc space-y-2 pl-5">
               <li>You are solely responsible for text, images, logos, or artwork submitted for customization.</li>
               <li>
@@ -66,14 +66,14 @@ export default function TermsAndConditionsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="4. Product Representation and Quality">
+          <PolicySection title="Product Representation and Quality">
             <p>
               We make reasonable efforts to display product previews accurately. Final print output may vary slightly
               due to screen settings, fabric texture, print method, and production tolerances.
             </p>
           </PolicySection>
 
-          <PolicySection title="5. Orders, Pricing, and Acceptance">
+          <PolicySection title="Orders, Pricing, and Acceptance">
             <ul className="list-disc space-y-2 pl-5">
               <li>All orders are subject to acceptance and serviceability.</li>
               <li>Prices, offers, and product availability may change without prior notice.</li>
@@ -84,7 +84,7 @@ export default function TermsAndConditionsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="6. Policy Links for Checkout and Fulfillment">
+          <PolicySection title="Policy Links for Checkout and Fulfillment">
             <p>Order-related terms are also governed by the following policy pages:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>
@@ -110,45 +110,45 @@ export default function TermsAndConditionsPage() {
             </ul>
           </PolicySection>
 
-          <PolicySection title="7. Prohibited Use">
+          <PolicySection title="Prohibited Use">
             <p>You agree not to misuse the platform by:</p>
             <ul className="list-disc space-y-2 pl-5">
               <li>Attempting unauthorized access to any account, system, or data.</li>
               <li>Uploading malware, harmful scripts, or disruptive content.</li>
-              <li>Using CUSTOMED for unlawful transactions or prohibited goods/services.</li>
+              <li>Using Customed Clothing for unlawful transactions or prohibited goods/services.</li>
             </ul>
           </PolicySection>
 
-          <PolicySection title="8. Limitation of Liability">
+          <PolicySection title="Limitation of Liability">
             <p>
-              To the maximum extent permitted by law, CUSTOMED is not liable for indirect, incidental, special, or
+              To the maximum extent permitted by law, Customed Clothing is not liable for indirect, incidental, special, or
               consequential damages arising from your use of the website or purchase of products.
             </p>
           </PolicySection>
 
-          <PolicySection title="9. Indemnity">
+          <PolicySection title="Indemnity">
             <p>
-              You agree to indemnify and hold harmless CUSTOMED, its team, and service providers from claims, losses,
+              You agree to indemnify and hold harmless Customed Clothing, its team, and service providers from claims, losses,
               liabilities, and expenses arising from your content submissions, policy violations, or unlawful use of
               the platform.
             </p>
           </PolicySection>
 
-          <PolicySection title="10. Governing Law and Jurisdiction">
+          <PolicySection title="Governing Law and Jurisdiction">
             <p>
               These terms are governed by the laws of India. Any disputes are subject to the courts in Bengaluru,
               Karnataka, unless otherwise required by applicable consumer law.
             </p>
           </PolicySection>
 
-          <PolicySection title="11. Policy Updates">
+          <PolicySection title="Policy Updates">
             <p>
               We may revise these Terms and Conditions at any time. Updated versions will be posted on this page with
               a revised effective date.
             </p>
           </PolicySection>
 
-          <PolicySection title="12. Contact Us">
+          <PolicySection title="Contact Us">
             <p>
               For questions regarding these terms, please use our{" "}
               <Link href="/contact" className="font-medium text-[#000000] underline underline-offset-4">
@@ -164,3 +164,6 @@ export default function TermsAndConditionsPage() {
     </>
   );
 }
+
+
+
