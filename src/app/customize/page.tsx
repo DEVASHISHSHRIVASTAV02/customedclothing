@@ -65,7 +65,7 @@ export default async function CustomizeIndexPage() {
             const displayName = getDisplayProductName(product.slug, product.name);
             return (
               <Card key={product.id} className="overflow-hidden border-[#ffffff]/20 bg-[#000000] bg-none text-[#ffffff] shadow-none">
-                <CardBody className="space-y-4 p-5">
+                <CardBody className="space-y-3 p-4">
                   <div className="aspect-[16/11] overflow-hidden rounded-xl border border-[#ffffff]/20 bg-[#000000]">
                     <ClothingImage
                       type={product.slug}
@@ -73,15 +73,17 @@ export default async function CustomizeIndexPage() {
                       className="h-full w-full rounded-none border-0 bg-[#ffffff]"
                     />
                   </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-[#ffffff]">{displayName}</h2>
-                    <p className="mt-1 text-sm text-[#ffffff]/80">Starting at Rs {startingPrice}</p>
+                  <div className="flex items-end justify-between gap-3">
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#ffffff]">{displayName}</h2>
+                      <p className="mt-1 text-sm text-[#ffffff]/80">Starting at Rs {startingPrice}</p>
+                    </div>
+                    <Link href={`/customize/${product.slug}`} className="shrink-0">
+                      <Button className="h-9 px-4 text-sm !border-[#ffffff] !bg-[#ffffff] !text-[#000000] hover:!border-[#ffffff] hover:!bg-[#000000] hover:!text-[#ffffff] active:!border-[#ffffff] active:!bg-[#ffffff] active:!text-[#000000]">
+                        Customize
+                      </Button>
+                    </Link>
                   </div>
-                  <Link href={`/customize/${product.slug}`}>
-                    <Button className="w-full !border-[#ffffff] !bg-[#ffffff] !text-[#000000] hover:!border-[#ffffff] hover:!bg-[#000000] hover:!text-[#ffffff] active:!border-[#ffffff] active:!bg-[#ffffff] active:!text-[#000000]">
-                      Customize {displayName}
-                    </Button>
-                  </Link>
                 </CardBody>
               </Card>
             );
