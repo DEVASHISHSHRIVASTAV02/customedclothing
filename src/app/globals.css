@@ -28,15 +28,34 @@
   --font-mono: var(--font-mono);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+  border-radius: 6px !important;
+}
+
+.site-header-no-radius,
+.site-header-no-radius *,
+.site-header-no-radius *::before,
+.site-header-no-radius *::after,
+.site-footer-no-radius,
+.site-footer-no-radius *,
+.site-footer-no-radius *::before,
+.site-footer-no-radius *::after {
+  border-radius: 0 !important;
+}
+
+.site-header-no-radius .rounded-full,
+.site-header-no-radius .\!rounded-full {
+  border-radius: 9999px !important;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: #f0f0f0;
-  background-image: linear-gradient(135deg, #f0f0f0 0%, #f0f0f0 50%, #f0f0f0 100%);
+  background-color: #e9e9e9;
+  background-image: linear-gradient(135deg, #e9e9e9 0%, #e9e9e9 50%, #e9e9e9 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;

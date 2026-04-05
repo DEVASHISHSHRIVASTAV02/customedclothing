@@ -2553,7 +2553,7 @@ export function ProductCustomizer({
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6 px-6 py-8">
-      {showStepGuidancePopup && isStepGuidanceStep(currentStep) && (
+      {showStepGuidancePopup && currentStep >= 2 && currentStep <= 5 && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#000000]/50 px-4">
           <div
             role="dialog"
@@ -2918,9 +2918,22 @@ export function ProductCustomizer({
 
         <Card>
           <CardHeader>
-            <h3 className="text-lg font-semibold">
-              {currentStep === 2 ? "Selected Product" : `Design Canvas (${activeAreaLabel})`}
-            </h3>
+            <div className="flex items-center justify-between gap-3">
+              <h3 className="text-lg font-semibold">
+                {currentStep === 2 ? "Selected Product" : `Design Canvas (${activeAreaLabel})`}
+              </h3>
+              {currentStep >= 2 && currentStep <= 5 && (
+                <button
+                  type="button"
+                  onClick={() => setShowStepGuidancePopup(true)}
+                  aria-label="Open design note"
+                  title="info*"
+                  className="inline-flex h-7 min-w-7 cursor-help items-center justify-center rounded-full border border-[#ff0000] bg-[#ffffff] px-2 text-xs font-semibold text-[#ff0000] transition-colors hover:border-[#cc0000] hover:text-[#cc0000] active:border-[#cc0000] active:text-[#cc0000]"
+                >
+                  i
+                </button>
+              )}
+            </div>
           </CardHeader>
           <CardBody className="space-y-4">
             {currentStep === 2 && (

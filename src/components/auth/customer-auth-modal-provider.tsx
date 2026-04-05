@@ -350,7 +350,15 @@ function CustomerAuthModal({
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#000000]/45 px-4 py-8 backdrop-blur-sm">
       <div className="absolute inset-0" onClick={onClose} aria-hidden />
       <Card className="relative z-[81] w-full max-w-md">
-        <CardHeader className="space-y-2">
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close auth popup"
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center border border-[#000000] bg-[#ffffff] text-lg leading-none text-[#000000] transition-colors hover:bg-[#000000] hover:text-[#ffffff]"
+        >
+          X
+        </button>
+        <CardHeader className="space-y-2 pr-10">
           <p className="text-xs uppercase tracking-[0.2em] text-[#000000]">CUSTOMED Account</p>
           <h2 className="text-2xl font-semibold tracking-tight">{heading}</h2>
           {reason && <p className="text-sm text-[#000000]">{reason}</p>}

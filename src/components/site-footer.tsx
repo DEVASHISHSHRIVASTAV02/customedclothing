@@ -76,7 +76,7 @@ export async function SiteFooter() {
   }
 
   return (
-    <footer className="mt-20 border-t-2 border-[#ffffff]/20 bg-[#000000] text-[#ffffff]">
+    <footer className="site-footer-no-radius mt-20 border-t-2 border-[#ffffff]/20 bg-[#000000] text-[#ffffff]">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 md:grid-cols-2 xl:grid-cols-[1.2fr_0.85fr_0.95fr_1.35fr]">
         <FooterColumn title="Clothing Items" items={clothingItems} />
         <FooterColumn title="About Us" items={ABOUT_US_ITEMS} />
