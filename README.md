@@ -104,7 +104,6 @@ Behavior:
 - restore script: `scripts/restore.sh`
 - runbook: `docs/restore-runbook.md`
 - public launch requirements: `docs/public-launch-requirements.md`
-- MSG91 setup runbook: `docs/msg91-setup.md`
 
 ## Tests
 ```bash
@@ -116,5 +115,3 @@ npm run typecheck
 ## Notes
 - COD is active at launch.
 - Online payment methods are schema/API-ready but intentionally not enabled in checkout UI yet.
-- 3D preview currently uses procedural model placeholders; replace with production GLB assets under a dedicated model pipeline.
-
