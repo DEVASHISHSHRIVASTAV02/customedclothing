@@ -1,6 +1,6 @@
-# Mono Thread - Custom Clothing Storefront MVP
+# Custom Clothing 
 
-Production-focused MVP for customizable clothing with:
+Production-focused for customizable clothing with:
 - 7-step design-to-checkout flow
 - Fabric.js editor (text, upload, paint tools)
 - 360 preview before approval
